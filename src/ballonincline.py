@@ -112,18 +112,14 @@ print(f'd_error = {d_error}')
 def fit_function2(x, alpha0, alpha1, alpha2):
         return alpha0 + alpha1*x + alpha2*x**2
 
-measurements_1_path = './data/Measurements_1'
+measurements_1_path = 'data/Measurements_1/'
+measurements_2_path = 'data/Measurements_2/'
 
-infiles1 = [f for f in listdir(measurements_1_path) if isfile(join(measurements_1_path, f))]
+# Get all file paths in folder
+infiles1 = [measurements_1_path + f for f in listdir(measurements_1_path) if isfile(join(measurements_1_path, f))]
+infiles2 = [measurements_2_path + f for f in listdir(measurements_2_path) if isfile(join(measurements_2_path, f))]
+
 print(f'measurements_1 = {infiles1}')
-
-infiles1 = ['1S01.csv','1S02.csv','1S03.csv','1S04.csv','1S05.csv','1S06.csv','1S07.csv','1S08.csv','1S09.csv','1S10.csv',
-            '1S11.csv','1S12.csv','1S13.csv','1S14.csv','1S15.csv','1S16.csv','1S17.csv','1S18.csv','1S19.csv','1S20.csv',
-            '1S21.csv','1S22.csv','1S23.csv','1S24.csv','1S25.csv']
-infiles2 = ['2S01.csv','2S02.csv','2S03.csv','2S04.csv','2S05.csv','2S06.csv','2S07.csv','2S08.csv','2S09.csv','2S10.csv',
-            '2S11.csv','2S12.csv','2S13.csv','2S14.csv','2S15.csv','2S16.csv','2S17.csv','2S18.csv','2S19.csv','2S20.csv',
-            '2S21.csv','2S22.csv','2S23.csv','2S24.csv','2S25.csv']
-
 
 Nexp = 1
 Npoints = 5
