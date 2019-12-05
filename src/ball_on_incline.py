@@ -104,8 +104,8 @@ def collect_gate_times(directory):
 
 ### Data ###
 # Importing date from the experiments
-gate_times, err_gate_times = collect_gate_times('./data/Measurements_1')
-reverse_gate_times, reverse_err_gate_times = collect_gate_times('./data/Measurements_2')
+gate_times, err_gate_times = collect_gate_times('../data/Measurements_1')
+reverse_gate_times, reverse_err_gate_times = collect_gate_times('../data/Measurements_2')
 
 # Path measurements in cm
 gate_1 = np.array([22.28, 22.45, 22.52, 22.42])
@@ -115,18 +115,74 @@ gate_4 = np.array([61.25, 61.51, 61.56, 61.52])
 gate_5 = np.array([74.32, 74.69, 74.48, 74.61])
 
 # Ball Measurements in mm
-ball_diameter = [12.685, 12.681, 12.66, 12.73]
+ball_diameter = np.array([12.685, 12.681, 12.66, 12.73])
 
 # Angle measurements in degrees
-angle_incline_1 = [77.5, 77.45, 77.50, 77.80]
-angle_incline_2 = [76.50, 77.30, 78.20, 76.20]
-big_angle_incline_1 = [75.90, 75.70, 75.70, 75.80]
-big_angle_incline_2 = [76.00, 76.05, 76.02, 76.01]
+angle_incline_1 = np.array([77.5, 77.45, 77.50, 77.80])
+angle_incline_2 = np.array([76.50, 77.30, 78.20, 76.20])
+reverse_big_angle_incline_1 = np.array([75.90, 75.70, 75.70, 75.80])
+reverse_big_angle_incline_2 = np.array([76.00, 76.05, 76.02, 76.01])
 
-reverse_angle_incline_1 = [76.90, 77.84, 76.80, 76.90]
-reverse_angle_incline_2 = [76.10, 77.51, 76.20, 76.50]
-reverse_big_angle_incline_1 = [76.80, 76.40, 76.18, 76.15]
-reverse_big_angle_incline_2 = [76.90, 76.85, 76.90, 76.85]
+reverse_angle_incline_1 = np.array([76.90, 77.84, 76.80, 76.90])
+reverse_angle_incline_2 = np.array([76.10, 77.51, 76.20, 76.50])
+big_angle_incline_1 = np.array([76.80, 76.40, 76.18, 76.15])
+big_angle_incline_2 = np.array([76.90, 76.85, 76.90, 76.85])
+
+pythagoras_kat_1 = np.array([90.20, 90.35, 90.45, 90.05])
+pythagoras_kat_2 = np.array([22.15, 22.25, 22.16, 22.19])
+pythagoras_hypo = np.sqrt(pythagoras_kat_1**2 + pythagoras_kat_2**2)
+
+theta_pyth = np.degrees(np.arctan(pythagoras_kat_2/pythagoras_kat_1))
+print(theta_pyth)
+err_theta_pyth = np.sqrt((np.sum((theta_pyth-np.mean(theta_pyth))**2)/4)) /2
+print(err_theta_pyth)
+
+
+theta = 90.0 - (angle_incline_1+angle_incline_2)/2
+theta_big = 90.0 - (big_angle_incline_1+big_angle_incline_2)/2
+print(theta)
+print(theta_big)
+err_theta = np.sqrt((np.sum((theta-np.mean(theta))**2)/4)) /2
+err_theta_big = np.sqrt((np.sum((theta_big-np.mean(theta_big))**2)/4)) /2
+print(err_theta)
+print(err_theta_big)
+
+weighted_average_theta = (np.sum(theta/err_theta**2) + np.sum(theta_big/err_theta_big**2))/( 4*np.sum(1/err_theta**2) + 4*np.sum(1/err_theta_big**2))
+print(weighted_average_theta)
+
+print()
+
+
+reverse_theta = 90.0 - (reverse_angle_incline_1+reverse_angle_incline_2)/2
+print(reverse_theta)
+reverse_theta_big = 90.0 - (reverse_big_angle_incline_1+reverse_big_angle_incline_2)/2
+print(reverse_theta_big)
+reverse_err_theta = np.sqrt((np.sum((reverse_theta-np.mean(reverse_theta))**2)/4)) /2
+reverse_err_theta_big = np.sqrt((np.sum((reverse_theta_big-np.mean(reverse_theta_big))**2)/4)) /2
+print(reverse_err_theta)
+print(reverse_err_theta_big)
+reverse_weighted_average_theta = (np.sum(reverse_theta/reverse_err_theta**2) + np.sum(reverse_theta_big/reverse_err_theta_big**2))/( 4*np.sum(1/reverse_err_theta**2) + 4*np.sum(1/reverse_err_theta_big**2))
+print(reverse_weighted_average_theta)
+
+print("Table angle:")
+table_angle = abs((weighted_average_theta - reverse_weighted_average_theta) /2)
+print(table_angle)
+print("\"True\" theta")
+true_theta = np.array([weighted_average_theta + table_angle, reverse_weighted_average_theta - table_angle])
+print(true_theta)
+
+"""
+print()
+
+print((np.mean(theta)+np.mean(theta_big))/2)
+print((np.mean(reverse_theta)+np.mean(reverse_theta_big))/2)
+"""
+
+#err_angle = RMS/np.sqret(N)
+
+#delta_Theta = abs(theta1 - theta2)
+#err_theta
+
 
 pythagoras_1 = 0
 pythagoras_2 = 0
