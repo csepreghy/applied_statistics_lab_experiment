@@ -107,15 +107,18 @@ def collect_gate_times(directory):
 gate_times, err_gate_times = collect_gate_times('../data/Measurements_1')
 reverse_gate_times, reverse_err_gate_times = collect_gate_times('../data/Measurements_2')
 
-# Path measurements in cm
-gate_1 = np.array([22.28, 22.45, 22.52, 22.42])
-gate_2 = np.array([35.36, 35.62, 35.52, 35.56])
-gate_3 = np.array([48.40, 48.53, 48.68, 48.63])
-gate_4 = np.array([61.25, 61.51, 61.56, 61.52])
-gate_5 = np.array([74.32, 74.69, 74.48, 74.61])
+# Path measurements in m
+gate_1 = np.array([22.28, 22.45, 22.52, 22.42]) /100
+gate_2 = np.array([35.36, 35.62, 35.52, 35.56]) /100
+gate_3 = np.array([48.40, 48.53, 48.68, 48.63]) /100
+gate_4 = np.array([61.25, 61.51, 61.56, 61.52]) /100
+gate_5 = np.array([74.32, 74.69, 74.48, 74.61]) /100
 
-# Ball Measurements in mm
-ball_diameter = np.array([12.685, 12.681, 12.66, 12.73])
+# Ball measurements in m
+ball_diameter = np.array([12.685, 12.681, 12.66, 12.73]) /1000
+
+# Slide measurements
+slide_width = np.array([0])
 
 # Angle measurements in degrees
 angle_incline_1 = np.array([77.5, 77.45, 77.50, 77.80])
@@ -127,92 +130,106 @@ reverse_angle_incline_1 = np.array([76.90, 77.84, 76.80, 76.90])
 reverse_angle_incline_2 = np.array([76.10, 77.51, 76.20, 76.50])
 big_angle_incline_1 = np.array([76.80, 76.40, 76.18, 76.15])
 big_angle_incline_2 = np.array([76.90, 76.85, 76.90, 76.85])
-
+# Pythagoras angle measurements in cm
 pythagoras_kat_1 = np.array([90.20, 90.35, 90.45, 90.05])
 pythagoras_kat_2 = np.array([22.15, 22.25, 22.16, 22.19])
 pythagoras_hypo = np.sqrt(pythagoras_kat_1**2 + pythagoras_kat_2**2)
 
-theta_pyth = np.degrees(np.arctan(pythagoras_kat_2/pythagoras_kat_1))
-print(theta_pyth)
-err_theta_pyth = np.sqrt((np.sum((theta_pyth-np.mean(theta_pyth))**2)/4)) /2
-print(err_theta_pyth)
 
 
-theta = 90.0 - (angle_incline_1+angle_incline_2)/2
-theta_big = 90.0 - (big_angle_incline_1+big_angle_incline_2)/2
-print(theta)
-print(theta_big)
-err_theta = np.sqrt((np.sum((theta-np.mean(theta))**2)/4)) /2
-err_theta_big = np.sqrt((np.sum((theta_big-np.mean(theta_big))**2)/4)) /2
-print(err_theta)
-print(err_theta_big)
-
-weighted_average_theta = (np.sum(theta/err_theta**2) + np.sum(theta_big/err_theta_big**2))/( 4*np.sum(1/err_theta**2) + 4*np.sum(1/err_theta_big**2))
-print(weighted_average_theta)
-
-print()
-
-
-reverse_theta = 90.0 - (reverse_angle_incline_1+reverse_angle_incline_2)/2
-print(reverse_theta)
-reverse_theta_big = 90.0 - (reverse_big_angle_incline_1+reverse_big_angle_incline_2)/2
-print(reverse_theta_big)
-reverse_err_theta = np.sqrt((np.sum((reverse_theta-np.mean(reverse_theta))**2)/4)) /2
-reverse_err_theta_big = np.sqrt((np.sum((reverse_theta_big-np.mean(reverse_theta_big))**2)/4)) /2
-print(reverse_err_theta)
-print(reverse_err_theta_big)
-reverse_weighted_average_theta = (np.sum(reverse_theta/reverse_err_theta**2) + np.sum(reverse_theta_big/reverse_err_theta_big**2))/( 4*np.sum(1/reverse_err_theta**2) + 4*np.sum(1/reverse_err_theta_big**2))
-print(reverse_weighted_average_theta)
-
-print("Table angle:")
-table_angle = abs((weighted_average_theta - reverse_weighted_average_theta) /2)
-print(table_angle)
-print("\"True\" theta")
-true_theta = np.array([weighted_average_theta + table_angle, reverse_weighted_average_theta - table_angle])
-print(true_theta)
-
-"""
-print()
-
-print((np.mean(theta)+np.mean(theta_big))/2)
-print((np.mean(reverse_theta)+np.mean(reverse_theta_big))/2)
-"""
-
-#err_angle = RMS/np.sqret(N)
-
-#delta_Theta = abs(theta1 - theta2)
-#err_theta
-
-
-pythagoras_1 = 0
-pythagoras_2 = 0
 
 ### Determine center values and uncertaincies ###
-# Gates
+### Gates
+print("\n### Gate measurements ###")
 central_value_gate_1 = np.sum(gate_1) / 4
 central_value_gate_2 = np.sum(gate_2) / 4
 central_value_gate_3 = np.sum(gate_3) / 4
 central_value_gate_4 = np.sum(gate_4) / 4
 central_value_gate_5 = np.sum(gate_5) / 4
 
-# err_gate_1 = np.sqrt(np.)
-# err_gate_2 = 
-# err_gate_3 = 
-# err_gate_4 = 
-# err_gate_5 = 
+err_gate_1 = np.sqrt((np.sum((gate_1-np.mean(gate_1))**2)/4)) /2
+err_gate_2 = np.sqrt((np.sum((gate_2-np.mean(gate_2))**2)/4)) /2
+err_gate_3 = np.sqrt((np.sum((gate_3-np.mean(gate_3))**2)/4)) /2
+err_gate_4 = np.sqrt((np.sum((gate_4-np.mean(gate_4))**2)/4)) /2
+err_gate_5 = np.sqrt((np.sum((gate_5-np.mean(gate_5))**2)/4)) /2
+# Add to array
+gate_positions = np.array([central_value_gate_1, central_value_gate_2, central_value_gate_3, central_value_gate_4, central_value_gate_5])
+err_gate_positions = np.array([err_gate_1, err_gate_2, err_gate_3, err_gate_4, err_gate_5])
+# Zero measurements
+gate_positions = (gate_positions-gate_positions[0])
+print("Gate positions")
+print(f"({gate_positions} +- {err_gate_positions}) m")
 
-# Angles
+### Angles
+# Normal setup
+# The measured angle is in the "wrong" corner
+print("\n### Angle measurements ###")
+theta = 90.0 - (angle_incline_1+angle_incline_2)/2
+theta_big = 90.0 - (big_angle_incline_1+big_angle_incline_2)/2
+# determine the errors
+err_theta = np.sqrt((np.sum((theta-np.mean(theta))**2)/4)) /2
+err_theta_big = np.sqrt((np.sum((theta_big-np.mean(theta_big))**2)/4)) /2
+print("Normal setup:")
+print(f"Small: {theta} +- {err_theta}")
+print(f"Big:   {theta_big} +- {err_theta_big}")
+# Take weighted average
+weighted_average_theta = (np.sum(theta/err_theta**2) + np.sum(theta_big/err_theta_big**2))/( 4*np.sum(1/err_theta**2) + 4*np.sum(1/err_theta_big**2))
+err_weighted_average_theta = np.sqrt(1 / ( 4*np.sum(1/err_theta**2) + 4*np.sum(1/err_theta_big**2)) )
+print("Weighted average theta:")
+print(f"{weighted_average_theta} +- {err_weighted_average_theta}")
+
+# Reverse setup
+reverse_theta = 90.0 - (reverse_angle_incline_1+reverse_angle_incline_2)/2
+reverse_theta_big = 90.0 - (reverse_big_angle_incline_1+reverse_big_angle_incline_2)/2
+# Determine the errors
+reverse_err_theta = np.sqrt((np.sum((reverse_theta-np.mean(reverse_theta))**2)/4)) /2
+reverse_err_theta_big = np.sqrt((np.sum((reverse_theta_big-np.mean(reverse_theta_big))**2)/4)) /2
+print("\nReverse setup:")
+print(f"Small: {theta} +- {err_theta}")
+print(f"Big:   {theta_big} +- {err_theta_big}")
+# Take weighted average
+reverse_weighted_average_theta = (np.sum(reverse_theta/reverse_err_theta**2) + np.sum(reverse_theta_big/reverse_err_theta_big**2))/( 4*np.sum(1/reverse_err_theta**2) + 4*np.sum(1/reverse_err_theta_big**2))
+reverse_err_weighted_average_theta = np.sqrt(1 / ( 4*np.sum(1/reverse_err_theta**2) + 4*np.sum(1/reverse_err_theta_big**2)) )
+print("Reverse weighted average theta:")
+print(f"{reverse_weighted_average_theta} +- {reverse_err_weighted_average_theta}")
+
+# Determine the Table angle
+print("\nTable angle:")
+table_angle = abs((weighted_average_theta - reverse_weighted_average_theta) /2)
+err_table_angle = np.sqrt(0.25*err_weighted_average_theta**2 + 0.25*reverse_err_weighted_average_theta**2)
+print(f"{table_angle} +- {err_table_angle}")
+print("\"True\" theta")
+true_theta = np.array([weighted_average_theta + table_angle, reverse_weighted_average_theta - table_angle])
+err_true_theta = np.array([np.sqrt(err_weighted_average_theta**2 + err_table_angle**2), np.sqrt(reverse_err_weighted_average_theta**2 + err_table_angle**2)])
+print(f"{true_theta} +- {err_true_theta}, [original, reverse]")
+
+print("\nPythagoras \"True\" angle")
+theta_pyth = np.degrees(np.arctan(pythagoras_kat_2/pythagoras_kat_1))
+central_value_theta_pyth = np.sum(theta_pyth) /4
+err_theta_pyth = np.sqrt((np.sum((theta_pyth-np.mean(theta_pyth))**2)/4)) /2
+print(f"{central_value_theta_pyth} +- {err_theta_pyth}")
+
+### Ball diameter
+print("\n### Ball Measurements ###")
+central_value_ball_diameter = np.mean(ball_diameter)
+err_ball_diameter = np.sqrt((np.sum((ball_diameter-np.mean(ball_diameter))**2)/4)) /2
+print("Ball diameter:")
+print(f"({central_value_ball_diameter} +- {err_ball_diameter}) m")
+
+### Slide width
+print("\n### Slide width Measurements ###")
+central_value_slide_width = np.mean(slide_width)
+err_slide_width = np.sqrt((np.sum((slide_width-np.mean(slide_width))**2)/4)) /2
+print("Slide width:")
+print(f"({central_value_slide_width} +- {err_slide_width}) m")
 
 ### Determining the acceleration ###
-gate_positions = np.array([central_value_gate_1, central_value_gate_2, central_value_gate_3, central_value_gate_4, central_value_gate_5])
-gate_positions = (gate_positions-gate_positions[0]) / 100
+
 #plt.plot(gate_times, gate_positions)
 #plt.show()
 
 
-
-err_gate_positions = np.array([0.002, 0.002, 0.002, 0.002, 0.002])
-
+print("\n### Determine aceleration ###")
 
 
 
@@ -270,22 +287,63 @@ def chi2_ball_on_incline(x, y, err_y):
 
 
 ### Peform Chi2 on the two data sets ###
-chi2_ball_on_incline(gate_times, gate_positions, err_gate_positions)
-chi2_ball_on_incline(reverse_gate_times, gate_positions, err_gate_positions)
+a, err_a = chi2_ball_on_incline(gate_times, gate_positions, err_gate_positions)
+rev_a, rev_err_a = chi2_ball_on_incline(reverse_gate_times, gate_positions, err_gate_positions)
+print(a)
+print(rev_a)
+
+print("\n### Determine g ###")
 
 
+def ball_on_incline_g(a, theta, delta_theta, D_ball, d_rail, err_a, err_theta, err_delta_theta, err_D_ball, err_d_rail, exp_type):
+    print("Input variables:")
+    print(a)
+    print(theta)
+    print(delta_theta)
+    print(D_ball)
+    print(d_rail)
+    # Give delta_theta correct sign
+    if exp_type == 'reverse':
+        delta_theta = delta_theta
+    elif exp_type == 'original':
+        delta_theta = -delta_theta
+    else:
+        return print("You need to specify if the slide was in \'original\' position or in \'reverse\' position")
+    # Convert angles into radians
+    theta = np.radians(theta)
+    delta_theta = np.radians(delta_theta)
+    err_theta = np.radians(err_theta)
+    err_delta_theta = np.radians(err_delta_theta)
+    # Define "constants"
+    acc_angle = a / np.sin(theta+delta_theta)
+    Dd = 1 + (2*D_ball**2)/(5*(D_ball**2 - d_rail**2))
+    print(acc_angle)
+    print(Dd)
+    
+    #Calculate g
+    g = acc_angle * Dd
 
+    # Define derivatives
+    dg_da = Dd/np.sin(theta+delta_theta)
+    dg_dtheta = Dd*a*np.cos(theta+delta_theta)/np.sin(theta+delta_theta)**2
+    dg_ddtheta = dg_dtheta
+    dg_dD = acc_angle*4*D_ball*d_rail**2 / (5*(D_ball**2 - d_rail**2)**2)
+    dg_dd = acc_angle*4*D_ball**2*d_rail / (5*(D_ball**2 - d_rail**2)**2)
 
+    # Add squared derivatives and errors to arrays
+    derivatives_squared = np.array([dg_da**2, dg_dtheta**2, dg_ddtheta**2, dg_dD**2, dg_dd**2])
+    errors_squared = np.array([err_a**2, err_theta**2, err_delta_theta**2, err_D_ball**2, err_d_rail**2])
+    # Calculate error on g
+    err_g = np.sqrt(np.sum(derivatives_squared*errors_squared))
 
+    return g, err_g
 
+central_value_slide_width = 0.0115
+g, err_g = ball_on_incline_g(a, true_theta[0], table_angle, central_value_ball_diameter, central_value_slide_width, err_a, err_true_theta[0], err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
+rev_g, rev_err_g = ball_on_incline_g(a, true_theta[1], table_angle, central_value_ball_diameter, central_value_slide_width, err_a, err_true_theta[1], err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
 
-
-
-
-
-
-
-
-
-
-
+print("\nCalulated g")
+print(np.sin(np.radians(true_theta[0]-table_angle)))
+print(np.sin(np.radians(true_theta[0]+table_angle)))
+print(f"({g} +- {err_g}) m/s^2")
+print(f"({rev_g} +- {rev_err_g}) m/s^2")
