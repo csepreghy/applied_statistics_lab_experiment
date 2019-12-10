@@ -77,31 +77,25 @@ def collect_gate_times(directory):
         err_t_gate_4.append(err_t_gates[3])
         err_t_gate_5.append(err_t_gates[4])
 
-    err_t_gate_1 = np.array(err_t_gate_1)
-    err_t_gate_2 = np.array(err_t_gate_2)
-    err_t_gate_3 = np.array(err_t_gate_3)
-    err_t_gate_4 = np.array(err_t_gate_4)
-    err_t_gate_5 = np.array(err_t_gate_5)
+    err_t_gate_1 = np.sqrt(np.sum((t_gate_1-np.mean(t_gate_1))**2))
+    err_t_gate_2 = np.sqrt(np.sum((t_gate_2-np.mean(t_gate_2))**2))
+    err_t_gate_3 = np.sqrt(np.sum((t_gate_3-np.mean(t_gate_3))**2))
+    err_t_gate_4 = np.sqrt(np.sum((t_gate_4-np.mean(t_gate_4))**2))
+    err_t_gate_5 = np.sqrt(np.sum((t_gate_5-np.mean(t_gate_5))**2))
     
     
-    weighted_average_t_gate_1 = np.sum(t_gate_1/err_t_gate_1**2) / np.sum(1/err_t_gate_1**2)
-    weighted_average_t_gate_2 = np.sum(t_gate_2/err_t_gate_2**2) / np.sum(1/err_t_gate_2**2)
-    weighted_average_t_gate_3 = np.sum(t_gate_3/err_t_gate_3**2) / np.sum(1/err_t_gate_3**2)
-    weighted_average_t_gate_4 = np.sum(t_gate_4/err_t_gate_4**2) / np.sum(1/err_t_gate_4**2)
-    weighted_average_t_gate_5 = np.sum(t_gate_5/err_t_gate_5**2) / np.sum(1/err_t_gate_5**2)
-    gate_times = np.array([weighted_average_t_gate_1, weighted_average_t_gate_2, weighted_average_t_gate_3, weighted_average_t_gate_4, weighted_average_t_gate_5])
-
-    prop_err_t_gate_1 = np.sqrt(np.sum((err_t_gate_1-np.mean(err_t_gate_1))**2))
-    prop_err_t_gate_2 = np.sqrt(np.sum((err_t_gate_2-np.mean(err_t_gate_2))**2))
-    prop_err_t_gate_3 = np.sqrt(np.sum((err_t_gate_3-np.mean(err_t_gate_3))**2))
-    prop_err_t_gate_4 = np.sqrt(np.sum((err_t_gate_4-np.mean(err_t_gate_4))**2))
-    prop_err_t_gate_5 = np.sqrt(np.sum((err_t_gate_5-np.mean(err_t_gate_5))**2))
-    err_gate_times = np.array([prop_err_t_gate_1, prop_err_t_gate_2, prop_err_t_gate_3, prop_err_t_gate_4, prop_err_t_gate_5])
+    t1_mean = np.mean(t_gate_1)
+    t2_mean = np.mean(t_gate_2)
+    t3_mean = np.mean(t_gate_3)
+    t4_mean = np.mean(t_gate_4)
+    t5_mean = np.mean(t_gate_5)
+    gate_times = np.array([t1_mean,t2_mean,t3_mean,t4_mean,t5_mean])
+    err_gate_times = np.array([err_t_gate_1,err_t_gate_2,err_t_gate_3,err_t_gate_4,err_t_gate_5])/5.0
     print()
-    print("Weighted Average times")
+    print("Average times")
     print(f"{gate_times} +- {err_gate_times}")
     print()
-    return gate_times, err_gate_times
+    return gate_times,err_gate_times
 
 
 ### Data ###
@@ -180,8 +174,8 @@ print("\n### Angle measurements ###")
 theta = 90.0 - (angle_incline_1+angle_incline_2)/2
 theta_big = 90.0 - (big_angle_incline_1+big_angle_incline_2)/2
 # determine the errors
-err_theta = np.sqrt((np.sum((theta-np.mean(theta))**2)/4)) /2
-err_theta_big = np.sqrt((np.sum((theta_big-np.mean(theta_big))**2)/4)) /2
+err_theta = np.sqrt((np.sum((theta-np.mean(theta))**2)/4)) 
+err_theta_big = np.sqrt((np.sum((theta_big-np.mean(theta_big))**2)/4)) 
 print("Normal setup:")
 print(f"Small: {theta} +- {err_theta}")
 print(f"Big:   {theta_big} +- {err_theta_big}")
@@ -195,8 +189,8 @@ print(f"{weighted_average_theta} +- {err_weighted_average_theta}")
 reverse_theta = 90.0 - (reverse_angle_incline_1+reverse_angle_incline_2)/2
 reverse_theta_big = 90.0 - (reverse_big_angle_incline_1+reverse_big_angle_incline_2)/2
 # Determine the errors
-reverse_err_theta = np.sqrt((np.sum((reverse_theta-np.mean(reverse_theta))**2)/4)) /2
-reverse_err_theta_big = np.sqrt((np.sum((reverse_theta_big-np.mean(reverse_theta_big))**2)/4)) /2
+reverse_err_theta = np.sqrt((np.sum((reverse_theta-np.mean(reverse_theta))**2)/4)) 
+reverse_err_theta_big = np.sqrt((np.sum((reverse_theta_big-np.mean(reverse_theta_big))**2)/4)) 
 print("\nReverse setup:")
 print(f"Small: {theta} +- {err_theta}")
 print(f"Big:   {theta_big} +- {err_theta_big}")
@@ -211,17 +205,25 @@ print("\nTable angle:")
 table_angle = abs((weighted_average_theta - reverse_weighted_average_theta) /2)
 err_table_angle = np.sqrt(0.25*err_weighted_average_theta**2 + 0.25*reverse_err_weighted_average_theta**2)
 print(f"{table_angle} +- {err_table_angle}")
-print("\"True\" theta")
-true_theta = np.array([weighted_average_theta + table_angle, reverse_weighted_average_theta - table_angle])
-err_true_theta = np.array([np.sqrt(err_weighted_average_theta**2 + err_table_angle**2), np.sqrt(reverse_err_weighted_average_theta**2 + err_table_angle**2)])
-print(f"{true_theta} +- {err_true_theta}, [original, reverse]")
+print("Slide theta")
+slide_theta = np.array([weighted_average_theta + table_angle, reverse_weighted_average_theta - table_angle])
+err_slide_theta = np.array([np.sqrt(err_weighted_average_theta**2 + err_table_angle**2), np.sqrt(reverse_err_weighted_average_theta**2 + err_table_angle**2)])
+slide_theta = slide_theta[0]
+err_slide_theta = np.sqrt(0.25*err_slide_theta[0]**2+0.25*err_slide_theta[1]**2)
+print(f"{slide_theta} +- {err_slide_theta}")
 
-print("\nPythagoras \"True\" theta")
+print("\nPythagoras slide theta")
 theta_pyth = np.degrees(np.arctan(pythagoras_kat_2/pythagoras_kat_1))
 central_value_theta_pyth = np.sum(theta_pyth) /4
 err_theta_pyth = np.sqrt((np.sum((theta_pyth-np.mean(theta_pyth))**2)/4)) /2
 print(f"{central_value_theta_pyth} +- {err_theta_pyth}")
 
+
+
+print("Weighted average slide theta")
+weighted_slide_theta = (slide_theta/err_slide_theta**2 + central_value_theta_pyth/err_theta_pyth**2)/(1/err_slide_theta**2+1/err_theta_pyth**2)
+err_weighted_slide_theta = np.sqrt(1/(1/err_slide_theta**2+1/err_theta_pyth**2))
+print(f"{weighted_slide_theta} +- {err_weighted_slide_theta}")
 
 ### Determining the acceleration ###
 
@@ -304,10 +306,10 @@ print("\nWeighted average og the accelerations")
 print(weighted_average_acc)
 print(rev_weighted_average_acc)
 
-# Determine acc from the weigthed times
+# Determine acc from the average times
 wt_a, wt_err_a = chi2_ball_on_incline(gate_times, gate_positions, err_gate_positions)
 rev_wt_a, rev_wt_err_a = chi2_ball_on_incline(reverse_gate_times, gate_positions, err_gate_positions)
-print("\nacceleration determined from the weighted times")
+print("\nacceleration determined from the average times")
 print(wt_a)
 print(rev_wt_a)
 
@@ -331,7 +333,7 @@ def ball_on_incline_g(a, theta, delta_theta, D_ball, d_rail, err_a, err_theta, e
     err_delta_theta = np.radians(err_delta_theta)
     # Define "constants"
     acc_angle = a / np.sin(theta+delta_theta)
-    Dd = 1 + (2*D_ball**2)/(5*(D_ball**2 - d_rail**2))
+    Dd = 1 + (2*d_rail**2)/(5*(d_rail**2 - (D_ball/2)**2))
     
     # Calculate g
     g = acc_angle * Dd
@@ -340,11 +342,12 @@ def ball_on_incline_g(a, theta, delta_theta, D_ball, d_rail, err_a, err_theta, e
     dg_da = Dd/np.sin(theta+delta_theta)
     dg_dtheta = Dd*a*np.cos(theta+delta_theta)/np.sin(theta+delta_theta)**2
     dg_ddtheta = dg_dtheta
-    dg_dD = acc_angle*4*D_ball*d_rail**2 / (5*(D_ball**2 - d_rail**2)**2)
-    dg_dd = acc_angle*4*D_ball**2*d_rail / (5*(D_ball**2 - d_rail**2)**2)
+    dg_dD_ball = acc_angle*4*d_rail**2*(D_ball/2) / (5*(d_rail**2 - (D_ball/2)**2)**2)
+    dg_dd_rail = acc_angle*4*d_rail*(D_ball/2)**2 / (5*(d_rail**2 - (D_ball/2)**2)**2)
+    #print(dg_dd_rail,dg_dd_rail**2,dg_dd_rail**2*err_d_rail**2)
 
     # Add squared derivatives and errors to arrays
-    derivatives_squared = np.array([dg_da**2, dg_dtheta**2, dg_ddtheta**2, dg_dD**2, dg_dd**2])
+    derivatives_squared = np.array([dg_da**2, dg_dtheta**2, dg_ddtheta**2, dg_dD_ball**2, dg_dd_rail**2])
     errors_squared = np.array([err_a**2, err_theta**2, err_delta_theta**2, err_D_ball**2, err_d_rail**2])
     # Calculate error on g
     err_g = np.sqrt(np.sum(derivatives_squared*errors_squared))
@@ -356,20 +359,20 @@ central_value_slide_width = 0.006
 err_slide_width = 0.0001
 
 #Calculating g from weighted average of the times
-wt_g, wt_err_g = ball_on_incline_g(wt_a, true_theta[0], table_angle, central_value_ball_diameter, central_value_slide_width, wt_err_a, err_true_theta[0], err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
-rev_wt_g, rev_wt_err_g = ball_on_incline_g(rev_wt_a, true_theta[1], table_angle, central_value_ball_diameter, central_value_slide_width, rev_wt_err_a, err_true_theta[1], err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
+wt_g, wt_err_g = ball_on_incline_g(wt_a, weighted_slide_theta, table_angle, central_value_ball_diameter, central_value_slide_width, wt_err_a, err_weighted_slide_theta, err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
+rev_wt_g, rev_wt_err_g = ball_on_incline_g(rev_wt_a, weighted_slide_theta, table_angle, central_value_ball_diameter, central_value_slide_width, rev_wt_err_a, err_weighted_slide_theta, err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
 print("\nCalulated g from weighted average of times")
-print(np.sin(np.radians(true_theta[0]-table_angle)))
-print(np.sin(np.radians(true_theta[0]+table_angle)))
+print(np.sin(np.radians(weighted_slide_theta-table_angle)))
+print(np.sin(np.radians(weighted_slide_theta+table_angle)))
 print(f"({wt_g} +- {wt_err_g}) m/s^2")
 print(f"({rev_wt_g} +- {rev_wt_err_g}) m/s^2")
 
 #Calculating g from weighted average of the accelerations
-wa_g, wa_err_g = ball_on_incline_g(weighted_average_acc, true_theta[0], table_angle, central_value_ball_diameter, central_value_slide_width, weighted_err_acc, err_true_theta[0], err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
-rev_wa_g, rev_wa_err_g = ball_on_incline_g(rev_weighted_average_acc, true_theta[1], table_angle, central_value_ball_diameter, central_value_slide_width, rev_weighted_err_acc, err_true_theta[0], err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
+wa_g, wa_err_g = ball_on_incline_g(weighted_average_acc, weighted_slide_theta, table_angle, central_value_ball_diameter, central_value_slide_width, weighted_err_acc, err_weighted_slide_theta, err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
+rev_wa_g, rev_wa_err_g = ball_on_incline_g(rev_weighted_average_acc, weighted_slide_theta, table_angle, central_value_ball_diameter, central_value_slide_width, rev_weighted_err_acc, err_weighted_slide_theta, err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
 print("\nCalulated g from weighted average of accelerations")
-print(np.sin(np.radians(true_theta[0]-table_angle)))
-print(np.sin(np.radians(true_theta[0]+table_angle)))
+print(np.sin(np.radians(weighted_slide_theta-table_angle)))
+print(np.sin(np.radians(weighted_slide_theta+table_angle)))
 print(f"({wa_g} +- {wa_err_g}) m/s^2")
 print(f"({rev_wa_g} +- {rev_wa_err_g}) m/s^2")
 
@@ -379,10 +382,10 @@ rev_a_g = np.zeros(25)
 err_a_g = np.zeros(25)
 rev_err_a_g = np.zeros(25)
 for i in range(25):
-    a_g[i], err_a_g[i] = ball_on_incline_g(acc[i], true_theta[0], table_angle, central_value_ball_diameter, central_value_slide_width, err_acc[i], err_true_theta[0], err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
-    rev_a_g[i], rev_err_a_g[i] = ball_on_incline_g(rev_acc[i], true_theta[1], table_angle, central_value_ball_diameter, central_value_slide_width, rev_err_acc[i], err_true_theta[1], err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
+    a_g[i], err_a_g[i] = ball_on_incline_g(acc[i], weighted_slide_theta, table_angle, central_value_ball_diameter, central_value_slide_width, err_acc[i], err_weighted_slide_theta, err_table_angle, err_ball_diameter, err_slide_width, exp_type='original')
+    rev_a_g[i], rev_err_a_g[i] = ball_on_incline_g(rev_acc[i], weighted_slide_theta, table_angle, central_value_ball_diameter, central_value_slide_width, rev_err_acc[i], err_weighted_slide_theta, err_table_angle, err_ball_diameter, err_slide_width, exp_type='reverse')
 print("\nCalulated weighted average of g for each acceleration")
-print(np.sin(np.radians(true_theta[0]-table_angle)))
-print(np.sin(np.radians(true_theta[0]+table_angle)))
+print(np.sin(np.radians(weighted_slide_theta-table_angle)))
+print(np.sin(np.radians(weighted_slide_theta+table_angle)))
 print(f"({wa_g} +- {wa_err_g}) m/s^2")
 print(f"({rev_wa_g} +- {rev_wa_err_g}) m/s^2")
