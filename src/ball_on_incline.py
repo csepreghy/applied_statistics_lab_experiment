@@ -209,7 +209,8 @@ print("Slide theta")
 slide_theta = np.array([weighted_average_theta + table_angle, reverse_weighted_average_theta - table_angle])
 err_slide_theta = np.array([np.sqrt(err_weighted_average_theta**2 + err_table_angle**2), np.sqrt(reverse_err_weighted_average_theta**2 + err_table_angle**2)])
 slide_theta = slide_theta[0]
-err_slide_theta = np.sqrt(0.25*err_slide_theta[0]**2+0.25*err_slide_theta[1]**2)
+#err_slide_theta = np.sqrt(0.25*err_slide_theta[0]**2+0.25*err_slide_theta[1]**2)
+err_slide_theta = np.sqrt(1/(1/err_slide_theta[0]**2+1/err_slide_theta[1]**2))
 print(f"{slide_theta} +- {err_slide_theta}")
 
 print("\nPythagoras slide theta")
