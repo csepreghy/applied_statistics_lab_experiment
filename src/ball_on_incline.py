@@ -230,7 +230,7 @@ print(f"{weighted_slide_theta} +- {err_weighted_slide_theta}")
 
 # Chi2 functions for determining the acceleration
 def fitting_function(x, alpha0, alpha1, alpha2):
-    return alpha0 + alpha1*x + alpha2*x**2
+    return alpha0 + alpha1*x + 0.5*alpha2*x**2
 
 def chi2_ball_on_incline(x, y, err_y):
     # Now we define a ChiSquare to be minimised (using probfit), where we set various settings and starting parameters:
@@ -255,48 +255,59 @@ def chi2_ball_on_incline(x, y, err_y):
     Prob_fit = stats.chi2.sf(Chi2_fit, Ndof_fit)    # The chi2 probability given N degrees of freedom
 
     # Plotting
-    #fig, ax = plt.subplots(figsize=(10,6))
-    #plotting_times = np.linspace(0.0, 0.6, 1000)
-    #ax.errorbar(x, y, fmt='ro', ecolor='k', elinewidth=1, capsize=2, capthick=1)
-    #ax.plot(plotting_times, fitting_function(plotting_times, alpha0_fit, alpha1_fit, alpha2_fit), '-r')
-    #ax.set_xlim(0.520,0.527)
-    #ax.set_ylim(0.5,0.6)
+    """
+    fig, ax = plt.subplots(figsize=(8,8))
+    plotting_times = np.linspace(0.0, 0.6, 1000)
+    ax.errorbar(x, y, yerr=err_y, fmt='ko', ecolor='k', barsabove=False, elinewidth=1, capsize=2, capthick=1)
+    ax.plot(plotting_times, fitting_function(plotting_times, alpha0_fit, alpha1_fit, alpha2_fit), '-r')
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("Position (m)")
+    ax.set_xlim(-0.01,0.55)
+    ax.set_ylim(-0.01,0.55)
     # Add nice text
-    #d = {'alpha0':  [alpha0_fit, sigma_alpha0_fit],
-    #    'alpha1':   [alpha1_fit, sigma_alpha1_fit],
-    #    'alpha2':   [alpha2_fit, sigma_alpha2_fit],
-    #    'Chi2':     Chi2_fit,
-    #    'ndf':      Ndof_fit,
-    #    'Prob':     Prob_fit,
-    #    }
-    #text = nice_string_output(d, extra_spacing=2, decimals=3)
-    #add_text_to_ax(0.02, 0.95, text, ax, fontsize=14)
-    #fig.tight_layout()
+    blank = ''
+    d = {" Result of the fit:": blank,
+        f"  y-intercept    = {'{0:.4f}'.format(alpha0_fit)} \u00B1 {'{0:.4f}'.format(sigma_alpha0_fit)}": blank,
+        f"  Start velocity = {'{0:.4f}'.format(alpha1_fit)} \u00B1 {'{0:.4f}'.format(sigma_alpha1_fit)}": blank,
+        f"  Acceleration   = {'{0:.4f}'.format(alpha2_fit)} \u00B1 {'{0:.4f}'.format(sigma_alpha2_fit)}": blank,
+        f'  Chi2 = {"{0:.4f}".format(Chi2_fit)} and P = {"{0:.4f}".format(Prob_fit)}': blank,
+        }
+    text = nice_string_output(d, extra_spacing=2, decimals=3)
+    add_text_to_ax(0.02, 0.95, text, ax, fontsize=14)
+    fig.tight_layout()
     #plt.show()
-
+    """
     # Print results
     #print(f"Acceleration={alpha2_fit} +- {sigma_alpha2_fit}")
     #print(f"Chi2={Chi2_fit}, prop={Prob_fit}")
 
-    return alpha2_fit, sigma_alpha2_fit
+    return alpha2_fit, sigma_alpha2_fit, Chi2_fit, Prob_fit
 
 print("\n### Determine aceleration ###")
 # Acceleration for each experiment
+"""
+path = os.path.join('../data/Measurements_1', "1S01.csv")
+time, voltage = read_ball_data(path)
+t_gates, err_t_gates = time_at_gate(time, voltage)
+acc, err_acc = chi2_ball_on_incline(t_gates, gate_positions, err_gate_positions)
+"""
 acc = np.zeros(25)
 err_acc = np.zeros(25)
 for i, filename in enumerate(os.listdir('../data/Measurements_1')):
     path = os.path.join('../data/Measurements_1', filename)
     time, voltage = read_ball_data(path)
     t_gates, err_t_gates = time_at_gate(time, voltage)
-    acc[i], err_acc[i] = chi2_ball_on_incline(t_gates, gate_positions, err_gate_positions)
-
+    acc[i], err_acc[i], Chi2, prob = chi2_ball_on_incline(t_gates, gate_positions, err_gate_positions)
+    print(f"{i+1} & {'{0:.4f}'.format(t_gates[0])} & {'{0:.4f}'.format(t_gates[1])} & {'{0:.4f}'.format(t_gates[2])} & {'{0:.4f}'.format(t_gates[3])} & {'{0:.4f}'.format(t_gates[4])} & {'{0:.4f}'.format(acc[i])} & {'{0:.4f}'.format(err_acc[i])} & {'{0:.4f}'.format(Chi2)} & {'{0:.4f}'.format(prob)} \\\\")
+print()
 rev_acc = np.zeros(25)
 rev_err_acc = np.zeros(25)
 for i, filename in enumerate(os.listdir('../data/Measurements_2')):
     path = os.path.join('../data/Measurements_2', filename)
     time, voltage = read_ball_data(path)
     t_gates, err_t_gates = time_at_gate(time, voltage)
-    rev_acc[i], rev_err_acc[i] = chi2_ball_on_incline(t_gates, gate_positions, err_gate_positions)
+    rev_acc[i], rev_err_acc[i], Chi2, prob = chi2_ball_on_incline(t_gates, gate_positions, err_gate_positions)
+    print(f"{i+1} & {'{0:.4f}'.format(t_gates[0])} & {'{0:.4f}'.format(t_gates[1])} & {'{0:.4f}'.format(t_gates[2])} & {'{0:.4f}'.format(t_gates[3])} & {'{0:.4f}'.format(t_gates[4])} & {'{0:.4f}'.format(rev_acc[i])} & {'{0:.4f}'.format(rev_err_acc[i])} & {'{0:.4f}'.format(Chi2)} & {'{0:.4f}'.format(prob)} \\\\")
 
 # Weighted average
 weighted_average_acc = np.sum(acc/err_acc**2) / np.sum(1/err_acc**2)
@@ -334,7 +345,7 @@ def ball_on_incline_g(a, theta, delta_theta, D_ball, d_rail, err_a, err_theta, e
     err_delta_theta = np.radians(err_delta_theta)
     # Define "constants"
     acc_angle = a / np.sin(theta+delta_theta)
-    Dd = 1 + (2*d_rail**2)/(5*(d_rail**2 - (D_ball/2)**2))
+    Dd = 1 + (2*D_ball**2)/(5*(D_ball**2 - d_rail**2))
     
     # Calculate g
     g = acc_angle * Dd
@@ -343,8 +354,8 @@ def ball_on_incline_g(a, theta, delta_theta, D_ball, d_rail, err_a, err_theta, e
     dg_da = Dd/np.sin(theta+delta_theta)
     dg_dtheta = Dd*a*np.cos(theta+delta_theta)/np.sin(theta+delta_theta)**2
     dg_ddtheta = dg_dtheta
-    dg_dD_ball = acc_angle*4*d_rail**2*(D_ball/2) / (5*(d_rail**2 - (D_ball/2)**2)**2)
-    dg_dd_rail = acc_angle*4*d_rail*(D_ball/2)**2 / (5*(d_rail**2 - (D_ball/2)**2)**2)
+    dg_dD_ball = acc_angle*4*d_rail**2*D_ball / (5*(D_ball**2 - d_rail**2)**2)
+    dg_dd_rail = acc_angle*4*d_rail*D_ball**2 / (5*(D_ball**2 - d_rail**2)**2)
     #print(dg_dd_rail,dg_dd_rail**2,dg_dd_rail**2*err_d_rail**2)
 
     # Add squared derivatives and errors to arrays
